@@ -9,55 +9,57 @@ from sklearn.metrics import confusion_matrix
 from sklearn.linear_model import LogisticRegression
 import nltk
 from nltk.corpus import stopwords
+#import jieba
 import datetime
 
-class data_clean:
-    def clean_space(self):
+class DataClean():
+    def __init__(self, divTime, startTime, endTime):
+        self.time = divTime
+        self.startTime = startTime
+        self.endTime = endTime
+    def clean_space(self, oriText):
         '''
         清除空格
-        Return: 
-            没有空格的文本
+        :return: 没有空格的文本
         '''
         #print("处理前的文本：" + self)
-        content = self.replace(' ','')
+        content = oriText.replace(' ','')
         return content
 
-    def clean_character(self):
+    def clean_character(self, oriText):
         '''
         清除表情符号与空格
-        Return: 
-            只有数字、汉字、英文、常规句子符号的文本，且不符合要求的内容被替换成空字符
+        :return: 只有数字、汉字、英文、常规句子符号的文本，且不符合要求的内容被替换成空字符
         '''
         pattern = re.compile("[^\u4e00-\u9fa5^,^.^!^a-z^A-Z^0-9]")  # 只保留中英文、数字和符号，去掉其他东西
-        line = re.sub(pattern,'',self)
+        line = re.sub(pattern,'',oriText)
         content = ''.join(line.split())
         return content
 
-    def clean_time(self,startTime,endTime):
+    def clean_time(self):
         '''
-        对时间进行格式化，处理以下5种类型：
+        对时间进行格式化，处理一下三种类型
         47秒前
         57分钟前
         今天08:45
         06月30日 15:36
         2020年06月29日 22:51
-        Return: 
-            2021-7-1 8:24  类型的时间数据
+        :return: 2021-7-1 8:24  类型的时间数据
         '''
         now = datetime.datetime.now()
         ymd = now.strftime('%Y-%m-%d')
 
-        if self[-2:] == '秒前':
-            self = now - datetime.timedelta(seconds=int(self[:-2]))
-            return self.strftime('%Y-%m-%d %H:%M')
-        elif self[-3:] == '分钟前':
-            self = now - datetime.timedelta(minutes=int(self[:-3]))
-            return self.strftime('%Y-%m-%d %H:%M')
-        elif self[0:2] == '今天':
-            self = str(ymd) + ' ' + self[2:]
-            return self
-        elif self[2] == '月':
-            pattern = re.match('(\d+)月(\d+)日 (\d+):(\d+)', self)
+        if self.time[-2:] == '秒前':
+            self.time = now - datetime.timedelta(seconds=int(self.time[:-2]))
+            return self.time.strftime('%Y-%m-%d %H:%M')
+        elif self.time[-3:] == '分钟前':
+            self.time = now - datetime.timedelta(minutes=int(self.time[:-3]))
+            return self.time.strftime('%Y-%m-%d %H:%M')
+        elif self.time[0:2] == '今天':
+            self.time = str(ymd) + ' ' + self.time[2:]
+            return self.time
+        elif self.time[2] == '月':
+            pattern = re.match('(\d+)月(\d+)日 (\d+):(\d+)', self.time)
             self_mou = pattern.group(1)
             self_d = pattern.group(2)
             self_h = pattern.group(3)
@@ -65,17 +67,37 @@ class data_clean:
             self_year = datetime.datetime.now().year
             infoTime = str(str(self_year) + '-' + self_mou + '-' + self_d)
             infoTime = datetime.datetime.strptime(str(infoTime), "%Y-%m-%d")
-            if infoTime >= startTime and infoTime <= endTime:
+            if infoTime >= self.startTime and infoTime <= self.endTime:
                 return '{}-{}-{} {}:{}'.format(str(self_year),self_mou,self_d,self_h,self_min)
             else:
                 return 'None'
-        elif self[4] == '年':
-            pattern = re.match('(\d+)年(\d+)月(\d+)日 (\d+):(\d+)',self)
+        elif self.time[4] == '年':
+            pattern = re.match('(\d+)年(\d+)月(\d+)日 (\d+):(\d+)',self.time)
             self_year = pattern.group(1)
             self_mou = pattern.group(2)
             self_d = pattern.group(3)
             self_hour = pattern.group(4)
-            if str(self_year) == '2020':
+            #infoTime = str(str(self_year) + self_mou + self_d + self_hour)
+            #infoTime = datetime.datetime.strptime(str(infoTime), "%Y%m%d%h")
+            if str(self_year) == '2024':
                 return '{}-{}-{}-{}'.format(str(self_year), self_mou, self_d, self_hour)
             else:
                 return 'None'
+
+            '''
+            if infoTime >= startTime and infoTime <= endTime:
+                return '{}-{}-{}'.format(str(self_year), self_mou, self_d)
+            else:
+                return 'None'
+            '''
+
+
+
+
+
+
+
+
+
+
+
