@@ -14,7 +14,7 @@ import os
 import json
 import random
 import datetime
-from DataClean import data_clean as dc
+from DataClean import DataClean
 from urllib.parse import urlencode
 from pyquery import PyQuery as pq
 
@@ -485,7 +485,8 @@ def getContent(keyword, page, fileName, startTime, endTime, header, reCount):
             # 发文日期 dateTime
             try:
                 dateTime = item('div.from')('a').eq(0).text()
-                dateTime = str(dc.clean_time(str(dateTime), startTime, endTime))
+                dc = DataClean(str(dateTime), startTime, endTime)
+                dateTime = str(dc.clean_time())
             except:
                 print('!'*10 + '发文日期报错' + '!'*10)
                 dateTime = 'None'
