@@ -105,6 +105,8 @@ def getImage(weiboId, imageDiv):
         if not os.path.exists(os.path.join(".","data","images",str(weiboId))):
             os.makedirs(os.path.join(".","data","images",str(weiboId)))
         for data, ID in zip(pic_ids_list, list(range(len(pic_ids_list)))):
+            if len(data) == 0:
+                continue
             time.sleep(0.5)
             imageTypes = ['.jpg', '.png', '.jpeg']
             for imageType in imageTypes:
@@ -290,23 +292,44 @@ def getDiscuss(weiboId, page, cookie, max_id=0):
     '''
     
     headers = {
-        "Accept": "application/json, text/plain, */*",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
         "Accept-Encoding": "gzip, deflate, br, zstd",
-        "Accept-Language": "zh-CN,zh;q=0.9",
+        "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
         "Connection": "keep-alive",
         "Content-Type": "application/x-www-form-urlencoded",
         "Cookie": cookie,
         "Mweibo-Pwa":"1",
+        #"Host": "s.weibo.com",
         "Referer": "https://m.weibo.cn/detail/" + str(weiboId),
-        "Sec-Ch-Ua":'', # 待填入
+        "Sec-Ch-Ua":'"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"',
         "Sec-Ch-Ua-Mobile":"?0",
         "Sec-Ch-Ua-Platform":'"Windows"',
-        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Dest": "document",
         "Sec-Fetch-Mode": "cors",
         "Sec-Fetch-Site": "same-origin",
-        "User-Agent": "",   # 待填入
-        "X-Requested-With": "", # 待填入
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+        "X-Requested-With": "XMLHttpRequest",
     }
+    # 原始 评论内容 header备份
+    # headers = {
+    #     "Accept": "application/json, text/plain, */*",
+    #     "Accept-Encoding": "gzip, deflate, br, zstd",
+    #     "Accept-Language": "zh-CN,zh;q=0.9",
+    #     "Connection": "keep-alive",
+    #     "Content-Type": "application/x-www-form-urlencoded",
+    #     "Cookie": cookie,
+    #     "Mweibo-Pwa":"1",
+    #     #"Host": "s.weibo.com",
+    #     "Referer": "https://m.weibo.cn/detail/" + str(weiboId),
+    #     "Sec-Ch-Ua":'"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+    #     "Sec-Ch-Ua-Mobile":"?0",
+    #     "Sec-Ch-Ua-Platform":'"Windows"',
+    #     "Sec-Fetch-Dest": "empty",
+    #     "Sec-Fetch-Mode": "cors",
+    #     "Sec-Fetch-Site": "same-origin",
+    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    #     "X-Requested-With": "XMLHttpRequest",
+    # }
     
     if page == 1:
         url = 'https://m.weibo.cn/comments/hotflow?id={}&mid={}&max_id_type=0'.format(weiboId,weiboId)
